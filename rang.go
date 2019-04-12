@@ -2,7 +2,6 @@ package utils
 
 import (
 	"math/rand"
-	"strings"
 	"time"
 )
 
