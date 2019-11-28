@@ -23,11 +23,11 @@ func Assign(origin, target interface{}, excludes ...string) {
 		if is_exclude {
 			continue
 		}
-		switch val_origin.Field(i).Kind() {
-		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-			val_target.FieldByName(val_origin.Type().Field(i).Name).SetInt(val_origin.Field(i).Int())
-		case reflect.String:
-			val_target.FieldByName(val_origin.Type().Field(i).Name).SetString(val_origin.Field(i).String())
+		tmp_origin := val_origin.Field(i)
+		tmp_target := val_target.FieldByName(val_origin.Type().Field(i).Name)
+		if reflect.TypeOf(tmp_origin.Interface()) != reflect.TypeOf(tmp_target.Interface()) {
+			continue
 		}
+		tmp_target.Set(tmp_origin)
 	}
 }
