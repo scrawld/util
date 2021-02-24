@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// InSlice
+// InSlice 函数搜索数组中是否存在指定的值
 func InSlice(val interface{}, slice interface{}) (exists bool, index int) {
 	exists = false
 	index = -1
@@ -26,7 +26,7 @@ func InSlice(val interface{}, slice interface{}) (exists bool, index int) {
 	return
 }
 
-// SliceDiff
+// SliceDiff 函数用于比较两个数组的值，并返回差集
 func SliceDiff(slice1, slice2 interface{}) (r []interface{}) {
 	if reflect.TypeOf(slice1).Kind() != reflect.Slice || reflect.TypeOf(slice2).Kind() != reflect.Slice {
 		return
@@ -48,7 +48,7 @@ func SliceDiff(slice1, slice2 interface{}) (r []interface{}) {
 	return
 }
 
-// SliceUnique
+// SliceUnique 函数用于移除数组中重复的值
 func SliceUnique(slice interface{}) (r []interface{}) {
 	if reflect.TypeOf(slice).Kind() != reflect.Slice {
 		return
@@ -85,7 +85,7 @@ func SliceUniqueInt32(slice []int32) (r []int32) {
 	return
 }
 
-// SliceShuffle
+// SliceShuffle 函数把数组中的元素按随机顺序重新排列
 func SliceShuffle(slice interface{}) {
 	if reflect.TypeOf(slice).Kind() != reflect.Slice {
 		return
@@ -98,5 +98,23 @@ func SliceShuffle(slice interface{}) {
 		s.Index(k).Set(s.Index(i))
 		s.Index(i).Set(reflect.ValueOf(tmp))
 	}
+	return
+}
+
+// SliceChunk 函数把一个数组分割为新的数组块
+func SliceChunk(slice []int, size int) (r [][]int) {
+	for size < len(slice) {
+		r, slice = append(r, slice[0:size:size]), slice[size:]
+	}
+	r = append(r, slice)
+	return
+}
+
+// SliceChunkInt64
+func SliceChunkInt64(slice []int64, size int) (r [][]int64) {
+	for size < len(slice) {
+		r, slice = append(r, slice[0:size:size]), slice[size:]
+	}
+	r = append(r, slice)
 	return
 }
