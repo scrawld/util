@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -58,9 +59,18 @@ func SetHeader(header interface{}) ClientOptionFunc {
 }
 
 // SetBody sets the request body
-func SetBody(body []byte) ClientOptionFunc {
+func SetBody(body interface{}) ClientOptionFunc {
 	return func(c *Client) error {
-		c.Body = bytes.NewReader(body)
+		switch b := body.(type) {
+		case map[string]string, map[string]interface{}:
+			t, err := json.Marshal(b)
+			if err != nil {
+				return fmt.Errorf("body encode error, %s", err)
+			}
+			c.Body = bytes.NewReader(t)
+		case []byte:
+			c.Body = bytes.NewReader(b)
+		}
 		return nil
 	}
 }

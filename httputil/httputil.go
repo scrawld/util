@@ -43,7 +43,7 @@ func Get(url string, respBody interface{}, options ...ClientOptionFunc) (r *http
  * 	SetTimeout(time.Second*10),
  * )
  */
-func Post(url string, body []byte, respBody interface{}, options ...ClientOptionFunc) (r *http.Response, err error) {
+func Post(url string, body interface{}, respBody interface{}, options ...ClientOptionFunc) (r *http.Response, err error) {
 	options = append(options, SetMethod("POST"), SetBody(body))
 	return Call(url, respBody, options...)
 }
