@@ -122,6 +122,10 @@ func Call(url string, respBody interface{}, options ...ClientOptionFunc) (r *htt
 	if err != nil {
 		return nil, err
 	}
+	if r.StatusCode != http.StatusOK {
+		err = fmt.Errorf("request failed: %s", r.Status)
+		return
+	}
 	if respBody == nil {
 		return
 	}
