@@ -62,14 +62,14 @@ func SetHeader(header interface{}) ClientOptionFunc {
 func SetBody(body interface{}) ClientOptionFunc {
 	return func(c *Client) error {
 		switch b := body.(type) {
-		case map[string]string, map[string]interface{}:
+		case []byte:
+			c.Body = bytes.NewReader(b)
+		default:
 			t, err := json.Marshal(b)
 			if err != nil {
 				return fmt.Errorf("body encode error, %s", err)
 			}
 			c.Body = bytes.NewReader(t)
-		case []byte:
-			c.Body = bytes.NewReader(b)
 		}
 		return nil
 	}
