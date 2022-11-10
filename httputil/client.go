@@ -27,6 +27,8 @@ type Client struct {
 	Body io.Reader
 	// Timeout specifies a time limit for requests made by this
 	Timeout time.Duration
+	// Adding query parameters to URL
+	Query map[string]interface{}
 }
 
 type ClientOptionFunc func(*Client) error
@@ -83,6 +85,14 @@ func SetTimeout(timeout time.Duration) ClientOptionFunc {
 	}
 }
 
+// SetQuery sets the request query parameters
+func SetQuery(query map[string]interface{}) ClientOptionFunc {
+	return func(c *Client) error {
+		c.Query = query
+		return nil
+	}
+}
+
 // Call sends an HTTP request and returns an HTTP response
 // Note: When resp is nil, you have to do it manually `response.Body.Close()`
 func Call(url string, respBody interface{}, options ...ClientOptionFunc) (r *http.Response, err error) {
@@ -116,15 +126,20 @@ func Call(url string, respBody interface{}, options ...ClientOptionFunc) (r *htt
 		req.Header.Set(k, c.Header.Get(k))
 	}
 
+	// Set query parameters to URL
+	if req.URL != nil && c.Query != nil {
+		q := req.URL.Query()
+		for k, v := range c.Query {
+			q.Add(k, fmt.Sprintf("%v", v))
+		}
+		req.URL.RawQuery = q.Encode()
+	}
+
 	// Client
 	client := http.Client{Timeout: c.Timeout}
 	r, err = client.Do(req)
 	if err != nil {
 		return nil, err
-	}
-	if r.StatusCode != http.StatusOK {
-		err = fmt.Errorf("request failed: %s", r.Status)
-		return
 	}
 	if respBody == nil {
 		return
