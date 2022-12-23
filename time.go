@@ -75,3 +75,31 @@ func FirstTimeOfDay(t time.Time) (r time.Time) {
 	r = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
 	return
 }
+
+// 获取周次 GetDtRange(time.Unix(1672588800, 0)) return 2023.1
+func GetWeek(tm time.Time) string {
+	year, week := tm.ISOWeek()
+	return fmt.Sprintf("%d.%d", year, week)
+}
+
+// 获取时间范围内的周次 GetWeekRange(1671790242, 1672588800) return []string{"2022.51", "2022.52", "2023.1"}
+func GetWeekRange(st, et int64) (r []string) {
+	var (
+		stTime   = time.Unix(st, 0)
+		etTime   = time.Unix(et, 0)
+		stZero   = time.Date(stTime.Year(), stTime.Month(), stTime.Day(), 0, 0, 0, 0, time.Local)
+		etZero   = time.Date(etTime.Year(), etTime.Month(), etTime.Day(), 0, 0, 0, 0, time.Local)
+		interval = int(etZero.Sub(stZero).Hours() / 24)
+	)
+	m := map[string]byte{}
+	for i := 0; i <= int(interval); i++ {
+		t := stZero.AddDate(0, 0, i)
+		week := GetWeek(t)
+		if _, ok := m[week]; ok {
+			continue
+		}
+		m[week] = 0
+		r = append(r, week)
+	}
+	return
+}
