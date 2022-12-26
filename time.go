@@ -6,6 +6,13 @@ import (
 	"time"
 )
 
+// 获取指定日期零点时间
+func FirstTimeOfDay(t time.Time) (r time.Time) {
+	r = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+	return
+}
+
+// 获取日期 GetDtByOffset(time.Now(), 0) return 20060102
 func GetDtByOffset(tm time.Time, offset int) (r int) {
 	r, _ = strconv.Atoi(tm.AddDate(0, 0, offset).Format("20060102"))
 	return
@@ -70,9 +77,31 @@ func DtSub(max, min int) (r int, err error) {
 	return
 }
 
-// 获取指定日期零点时间
-func FirstTimeOfDay(t time.Time) (r time.Time) {
-	r = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+// 获取日期到小时 GetDataHour(time.Now()) return 2022122609
+func GetDataHour(tm time.Time) (r int) {
+	r, _ = strconv.Atoi(tm.Format("2006010215"))
+	return
+}
+
+// 获取日期范围 GetDataHourRange(1672012800, 1672027997) ruturn []int{2022122608 2022122609 2022122610 2022122611 2022122612}
+func GetDataHourRange(st, et int64) (r []int) {
+	if st > et {
+		return
+	}
+	var (
+		stTime   = time.Unix(st, 0)
+		etTime   = time.Unix(et, 0)
+		stZero   = time.Date(stTime.Year(), stTime.Month(), stTime.Day(), stTime.Hour(), 0, 0, 0, time.Local)
+		etZero   = time.Date(etTime.Year(), etTime.Month(), etTime.Day(), etTime.Hour(), 0, 0, 0, time.Local)
+		interval = etZero.Sub(stZero).Hours()
+	)
+	for i := 0; i <= int(interval); i++ {
+		var (
+			t  = stZero.Add(time.Hour * time.Duration(i))
+			dh = GetDataHour(t)
+		)
+		r = append(r, dh)
+	}
 	return
 }
 
@@ -84,12 +113,15 @@ func GetWeek(tm time.Time) string {
 
 // 获取时间范围内的周次 GetWeekRange(1671790242, 1672588800) return []string{"2022.51", "2022.52", "2023.1"}
 func GetWeekRange(st, et int64) (r []string) {
+	if st > et {
+		return
+	}
 	var (
 		stTime   = time.Unix(st, 0)
 		etTime   = time.Unix(et, 0)
 		stZero   = time.Date(stTime.Year(), stTime.Month(), stTime.Day(), 0, 0, 0, 0, time.Local)
 		etZero   = time.Date(etTime.Year(), etTime.Month(), etTime.Day(), 0, 0, 0, 0, time.Local)
-		interval = int(etZero.Sub(stZero).Hours() / 24)
+		interval = etZero.Sub(stZero).Hours() / 24
 	)
 	m := map[string]byte{}
 	for i := 0; i <= int(interval); i++ {
