@@ -26,6 +26,16 @@ func InSlice(val interface{}, slice interface{}) (exists bool, index int) {
 	return
 }
 
+// InSliceF 函数搜索数组中是否存在指定的值
+func InSliceF[T comparable](val T, slice []T) (bool, int) {
+	for k, v := range slice {
+		if val == v {
+			return true, k
+		}
+	}
+	return false, -1
+}
+
 // SliceDiff 函数用于比较两个数组的值，并返回差集
 func SliceDiff(slice1, slice2 interface{}) (r []interface{}) {
 	if reflect.TypeOf(slice1).Kind() != reflect.Slice || reflect.TypeOf(slice2).Kind() != reflect.Slice {
