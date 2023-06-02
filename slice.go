@@ -58,6 +58,23 @@ func SliceDiff(slice1, slice2 interface{}) (r []interface{}) {
 	return
 }
 
+// SliceDiff 函数用于比较两个数组的值，并返回差集
+func SliceDiffF[T comparable](slice1, slice2 []T) (r []T) {
+	for i := 0; i < len(slice1); i++ {
+		if exists, _ := InSlice(slice1[i], slice2); exists {
+			continue
+		}
+		r = append(r, slice1[i])
+	}
+	for i := 0; i < len(slice2); i++ {
+		if exists, _ := InSlice(slice2[i], slice1); exists {
+			continue
+		}
+		r = append(r, slice2[i])
+	}
+	return
+}
+
 // SliceUnique 函数用于移除数组中重复的值
 func SliceUnique(slice interface{}) (r []interface{}) {
 	if reflect.TypeOf(slice).Kind() != reflect.Slice {
