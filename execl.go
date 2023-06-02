@@ -15,10 +15,10 @@ import (
  * Example:
  *
  * type ReportExcel struct {
- * 	Dt         string `excelize:"head:日期;"`
- * 	NewUsers   int64  `excelize:"head:注册人数;"`
- * 	LoginUsers int64  `excelize:"head:登录人数;"`
- * 	Tmp        int64  `excelize:"-"`
+ * 	Dt         string `excel:"日期"`
+ * 	NewUsers   int64  `excel:"注册人数"`
+ * 	LoginUsers int64  `excel:"登录人数"`
+ * 	Tmp        int64  `excel:"-"`
  * }
  * tbody := []ReportExcel{
  * 	{"2006-01-02", 1, 2},
@@ -63,14 +63,14 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 		if !ast.IsExported(t.Name) {
 			continue
 		}
-		tags := ParseTagSetting(t.Tag, "excelize")
+		tag := t.Tag.Get("excel")
 		// is ignored field
-		if _, ok := tags["-"]; ok {
+		if tag == "-" {
 			continue
 		}
 		head := t.Name
-		if t, ok := tags["HEAD"]; ok && len(head) > 0 {
-			head = t
+		if len(tag) > 0 {
+			head = tag
 		}
 		axis, err := excelize.CoordinatesToCellName(headCol, 1)
 		if err != nil {
@@ -103,9 +103,9 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 			if !ast.IsExported(t.Name) {
 				continue
 			}
-			tags := ParseTagSetting(t.Tag, "excelize")
+			tag := t.Tag.Get("excel")
 			// is ignored field
-			if _, ok := tags["-"]; ok {
+			if tag == "-" {
 				continue
 			}
 			bodyCol++
