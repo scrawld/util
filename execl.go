@@ -63,14 +63,13 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 		if !ast.IsExported(t.Name) {
 			continue
 		}
-		tag := t.Tag.Get("excel")
+		head := t.Tag.Get("excel")
 		// is ignored field
-		if tag == "-" {
+		if head == "-" {
 			continue
 		}
-		head := t.Name
-		if len(tag) > 0 {
-			head = tag
+		if len(head) > 0 {
+			head = t.Name
 		}
 		axis, err := excelize.CoordinatesToCellName(headCol, 1)
 		if err != nil {
@@ -103,9 +102,9 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 			if !ast.IsExported(t.Name) {
 				continue
 			}
-			tag := t.Tag.Get("excel")
+			head := t.Tag.Get("excel")
 			// is ignored field
-			if tag == "-" {
+			if head == "-" {
 				continue
 			}
 			bodyCol++
