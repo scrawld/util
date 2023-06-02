@@ -182,7 +182,7 @@ func ReadExcelToStruct[T any](filename string, body T) ([]T, error) {
 		r    = []T{}
 		head = rows[0]
 	)
-	for _, row := range rows[1:] {
+	for rowKey, row := range rows[1:] {
 		var (
 			t  = &body
 			rv = reflect.ValueOf(t).Elem()
@@ -206,7 +206,7 @@ func ReadExcelToStruct[T any](filename string, body T) ([]T, error) {
 			case reflect.Int, reflect.Int32, reflect.Int64:
 				v, err := strconv.Atoi(colCell)
 				if err != nil {
-					return nil, fmt.Errorf("head %s strconv.Atoi(%s) error: %s", h, colCell, err)
+					return nil, fmt.Errorf("row(%d) col(%d) head(%s) strconv.Atoi(%s) error: %s", rowKey+1, colKey+1, h, colCell, err)
 				}
 				fieldVal.SetInt(int64(v))
 			}
