@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"go/ast"
 	"reflect"
+	"strconv"
+	"strings"
 
 	"github.com/xuri/excelize/v2"
 )
@@ -118,4 +120,98 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 		return nil, fmt.Errorf("write to buffer error: %s", err)
 	}
 	return buf, nil
+}
+
+/**
+ * ReadExcelToStruct 读取excel到结构体
+ *
+ * Example:
+ *
+ * type ReportExcel struct {
+ * 	Dt         string `excel:"日期"`
+ * 	NewUsers   int64  `excel:"注册人数"`
+ * 	LoginUsers int64  `excel:"登录人数"`
+ * 	Tmp        int64  `excel:"-"`
+ * }
+ *
+ * records, err := ReadExcelToStruct("test.xlsx", ReportExcel{})
+ * if err != nil {
+ * 	//
+ * }
+ * fmt.Println(records)
+ */
+func ReadExcelToStruct[T any](filename string, body T) ([]T, error) {
+	var (
+		fieldIndexMap = map[string]int{}
+		sheet         = "Sheet1"
+
+		bodyType = reflect.TypeOf(body)
+		fieldNum = bodyType.NumField()
+	)
+	if t := bodyType.Kind(); t != reflect.Struct {
+		return nil, fmt.Errorf("body must be a struct, currently %s", t.String())
+	}
+	// get field index
+	for i := 0; i < fieldNum; i++ {
+		f := bodyType.Field(i)
+		head := f.Tag.Get("excel")
+		if head == "-" {
+			continue
+		}
+		if len(head) == 0 {
+			head = f.Name
+		}
+		fieldIndexMap[head] = i
+	}
+	// open excel file
+	f, err := excelize.OpenFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("open file error: %s", err)
+	}
+	defer f.Close()
+
+	// get all the rows
+	rows, err := f.GetRows(sheet)
+	if err != nil {
+		return nil, fmt.Errorf("get rows error: %s", err)
+	}
+	if len(rows) < 2 {
+		return []T{}, nil
+	}
+	var (
+		r    = []T{}
+		head = rows[0]
+	)
+	for _, row := range rows[1:] {
+		var (
+			t  = &body
+			rv = reflect.ValueOf(t).Elem()
+		)
+		for colKey, colCell := range row {
+			if len(head) <= colKey {
+				continue
+			}
+			colCell = strings.TrimSpace(colCell)
+
+			h := head[colKey]
+			fieldIndex, ok := fieldIndexMap[h]
+			if !ok {
+				continue
+			}
+			fieldVal := rv.Field(fieldIndex)
+
+			switch fieldVal.Kind() {
+			case reflect.String:
+				fieldVal.SetString(colCell)
+			case reflect.Int, reflect.Int32, reflect.Int64:
+				v, err := strconv.Atoi(colCell)
+				if err != nil {
+					return nil, fmt.Errorf("head %s strconv.Atoi(%s) error: %s", h, colCell, err)
+				}
+				fieldVal.SetInt(int64(v))
+			}
+		}
+		r = append(r, *t)
+	}
+	return r, nil
 }
