@@ -68,7 +68,7 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 		if head == "-" {
 			continue
 		}
-		if len(head) > 0 {
+		if len(head) == 0 {
 			head = t.Name
 		}
 		axis, err := excelize.CoordinatesToCellName(headCol, 1)
