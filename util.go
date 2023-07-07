@@ -56,7 +56,7 @@ func Assign(origin, target interface{}, excludes ...string) error {
 		if !originFieldVal.CanSet() || !targetFieldVal.CanSet() {
 			continue
 		}
-		if originFieldVal.Kind() != targetFieldVal.Kind() {
+		if originFieldVal.Type() != targetFieldVal.Type() {
 			continue
 		}
 		targetFieldVal.Set(originFieldVal)
