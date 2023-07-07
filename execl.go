@@ -13,7 +13,7 @@ import (
 )
 
 /**
- * ExportExcel 生成excel
+ * ExportExcel 导出excel
  *
  * Example:
  *
@@ -30,7 +30,7 @@ import (
  * if err != nil {
  * 	//
  * }
- * ioutil.WriteFile("test.xlsx", buf.Bytes(), 0644)
+ * os.WriteFile("test.xlsx", buf.Bytes(), 0644)
  */
 func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 	// make sure 'table' is a Struct

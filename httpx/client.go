@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -146,7 +145,7 @@ func Call(url string, respBody interface{}, options ...ClientOptionFunc) (r *htt
 	}
 	defer r.Body.Close()
 
-	b, err := ioutil.ReadAll(r.Body)
+	b, err := io.ReadAll(r.Body)
 	if err == nil && len(b) > 0 {
 		err = json.Unmarshal(b, respBody)
 	}
