@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"go/ast"
 	"reflect"
@@ -143,7 +144,6 @@ func ExportExcel(table interface{}, tbody interface{}) (*bytes.Buffer, error) {
 func ReadExcelToStruct[T any](filename string, body T) ([]T, error) {
 	var (
 		fieldIndexMap = map[string]int{}
-		sheet         = "Sheet1"
 
 		bodyType = reflect.TypeOf(body)
 		fieldNum = bodyType.NumField()
@@ -170,8 +170,13 @@ func ReadExcelToStruct[T any](filename string, body T) ([]T, error) {
 	}
 	defer f.Close()
 
+	// get sheet
+	sheet := f.GetSheetList()
+	if len(sheet) < 1 {
+		return nil, errors.New("sheet is empty")
+	}
 	// get all the rows
-	rows, err := f.GetRows(sheet)
+	rows, err := f.GetRows(sheet[0])
 	if err != nil {
 		return nil, fmt.Errorf("get rows error: %s", err)
 	}
