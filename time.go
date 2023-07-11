@@ -24,14 +24,14 @@ type TimeRange struct {
 }
 
 /**
- * GetDailyTimeRange 获取每日的时间范围
+ * GetTimeRangesByDay 按天划分时间范围,保留开始时间和结束时间
  *
  * Example:
  *
  * startTime := time.Unix(1688870348, 0) // 2023-7-9 10:39:08
  * endTime := time.Unix(1689059808, 0)   // 2023-7-11 15:16:48
  *
- * result := GetDailyTimeRange(startTime, endTime)
+ * result := GetTimeRangesByDay(startTime, endTime)
  *
  * for _, v := range result {
  * 	fmt.Printf("startTime: %s, endTime: %s\n", v.StartTime.Format("2006-01-02 15:04:05"), v.EndTime.Format("2006-01-02 15:04:05"))
@@ -42,7 +42,7 @@ type TimeRange struct {
  * 	//]
  * }
  */
-func GetDailyTimeRange(st, et time.Time) []*TimeRange {
+func GetTimeRangesByDay(st, et time.Time) []*TimeRange {
 	var (
 		stZero       = time.Date(st.Year(), st.Month(), st.Day(), 0, 0, 0, 0, st.Location())
 		etZero       = time.Date(et.Year(), et.Month(), et.Day(), 0, 0, 0, 0, et.Location())
@@ -63,6 +63,39 @@ func GetDailyTimeRange(st, et time.Time) []*TimeRange {
 			t.EndTime = et
 		}
 		r = append(r, t)
+	}
+	return r
+}
+
+/**
+ * GetDateRange 获取日期范围,从零点开始
+ *
+ * Example:
+ *
+ * startTime := time.Unix(1688870348, 0) // 2023-7-9 10:39:08
+ * endTime := time.Unix(1689059808, 0)   // 2023-7-11 15:16:48
+ *
+ * result := GetDateRange(startTime, endTime)
+ *
+ * for _, v := range result {
+ * 	fmt.Println(v.Format("2006-01-02 15:04:05"))
+ * 	//[
+ * 	//	"2023-07-09 00:00:00",
+ * 	//	"2023-07-10 00:00:00",
+ * 	//	"2023-07-11 00:00:00",
+ * 	//]
+ * }
+ */
+func GetDateRange(st, et time.Time) []time.Time {
+	var (
+		stZero       = time.Date(st.Year(), st.Month(), st.Day(), 0, 0, 0, 0, st.Location())
+		etZero       = time.Date(et.Year(), et.Month(), et.Day(), 0, 0, 0, 0, et.Location())
+		intervalDays = int(etZero.Sub(stZero).Hours() / 24) // 间隔天数
+		r            = []time.Time{}
+	)
+
+	for i := 0; i <= intervalDays; i++ {
+		r = append(r, stZero.AddDate(0, 0, i))
 	}
 	return r
 }
