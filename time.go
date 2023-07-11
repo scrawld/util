@@ -18,6 +18,55 @@ func GetDtByOffset(tm time.Time, offset int) (r int) {
 	return
 }
 
+type TimeRange struct {
+	StartTime time.Time
+	EndTime   time.Time
+}
+
+/**
+ * GetDailyTimeRange 获取每日的时间范围
+ *
+ * Example:
+ *
+ * startTime := time.Unix(1688870348, 0) // 2023-7-9 10:39:08
+ * endTime := time.Unix(1689059808, 0)   // 2023-7-11 15:16:48
+ *
+ * result := GetDailyTimeRange(startTime, endTime)
+ *
+ * for _, v := range result {
+ * 	fmt.Printf("startTime: %s, endTime: %s\n", v.StartTime.Format("2006-01-02 15:04:05"), v.EndTime.Format("2006-01-02 15:04:05"))
+ * 	//[
+ * 	//	["2023-07-09 10:39:08", "2023-07-10 00:00:00"],
+ * 	//	["2023-07-10 00:00:00", "2023-07-11 00:00:00"],
+ * 	//	["2023-07-11 00:00:00", "2023-07-11 15:16:48"],
+ * 	//]
+ * }
+ */
+func GetDailyTimeRange(st, et time.Time) []*TimeRange {
+	var (
+		stZero       = time.Date(st.Year(), st.Month(), st.Day(), 0, 0, 0, 0, st.Location())
+		etZero       = time.Date(et.Year(), et.Month(), et.Day(), 0, 0, 0, 0, et.Location())
+		intervalDays = int(etZero.Sub(stZero).Hours() / 24) // 间隔天数
+		dtLayout     = "20060102"
+		r            = []*TimeRange{}
+	)
+
+	for i := 0; i <= intervalDays; i++ {
+		t := &TimeRange{
+			StartTime: stZero.AddDate(0, 0, i),
+			EndTime:   stZero.AddDate(0, 0, i+1),
+		}
+		if t.StartTime.Format(dtLayout) == st.Format(dtLayout) { // 比较年月日是否相同
+			t.StartTime = st
+		}
+		if t.EndTime.Add(-time.Second).Format(dtLayout) == et.Format(dtLayout) {
+			t.EndTime = et
+		}
+		r = append(r, t)
+	}
+	return r
+}
+
 // 日期范围 GetDtRange(20200101, 20200203) ruturn []int{20200101,20200102,20200103}
 func GetDtRange(start_dt, end_dt int) (r []int, err error) {
 	if start_dt > end_dt {
