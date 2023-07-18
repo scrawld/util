@@ -18,6 +18,15 @@ func GetDtByOffset(tm time.Time, offset int) (r int) {
 	return
 }
 
+// DaysBetween 计算两个时间之间的天数差异
+func DaysBetween(start, end time.Time) int {
+	startZero := time.Date(start.Year(), start.Month(), start.Day(), 0, 0, 0, 0, start.Location())
+	endZero := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, end.Location())
+
+	duration := endZero.Sub(startZero)
+	return int(duration.Hours() / 24)
+}
+
 type TimeRange struct {
 	StartTime time.Time
 	EndTime   time.Time
