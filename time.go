@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"time"
 )
@@ -24,7 +25,7 @@ func DaysBetween(start, end time.Time) int {
 	endZero := time.Date(end.Year(), end.Month(), end.Day(), 0, 0, 0, 0, end.Location())
 
 	duration := endZero.Sub(startZero)
-	return int(duration.Hours() / 24)
+	return int(math.Abs(duration.Hours()) / 24)
 }
 
 type TimeRange struct {
