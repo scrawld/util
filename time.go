@@ -7,16 +7,22 @@ import (
 	"time"
 )
 
-// 获取指定日期零点时间
-func FirstTimeOfDay(t time.Time) (r time.Time) {
-	r = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.Local)
+// StartOfDay 获取指定日期零点时间
+func StartOfDay(t time.Time) (r time.Time) {
+	r = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
 	return
 }
 
-// 获取日期 GetDtByOffset(time.Now(), 0) return 20060102
+// GetDtByOffset 获取日期 GetDtByOffset(time.Now(), 0) return 20060102
 func GetDtByOffset(tm time.Time, offset int) (r int) {
 	r, _ = strconv.Atoi(tm.AddDate(0, 0, offset).Format("20060102"))
 	return
+}
+
+// DtToTime 日期缩写转时间
+func DtToTime(dt int) (r time.Time) {
+	tim, _ := time.ParseInLocation("20060102", strconv.Itoa(dt), time.Local)
+	return tim
 }
 
 // DaysBetween 计算两个时间之间的天数差异
