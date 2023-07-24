@@ -47,7 +47,7 @@ func SliceUnique[T comparable](slice []T) (r []T) {
 }
 
 // SliceShuffle 函数把数组中的元素按随机顺序重新排列
-func SliceShuffle[T comparable](slice []T) {
+func SliceShuffle[T any](slice []T) {
 	var ran = rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := len(slice) - 1; i > 0; i-- {
 		k := ran.Intn(i + 1)
