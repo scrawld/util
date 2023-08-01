@@ -39,10 +39,11 @@ func StructDiff(s1, s2 interface{}, excludes ...string) (before, after map[strin
 		}
 		switch tmpS1.Kind() {
 		case reflect.Slice:
-			d := SliceDiff(tmpS1.Interface(), tmpS2.Interface())
-			if len(d) == 0 {
-				continue
-			}
+			//d := SliceDiff(tmpS1.Interface()), tmpS2.Interface())
+			//if len(d) == 0 {
+			//	continue
+			//}
+			continue
 		case reflect.Struct:
 			if tmpS1.Type().Name() == "Decimal" {
 				dec1, ok1 := tmpS1.Interface().(decimal.Decimal)
